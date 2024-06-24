@@ -48,9 +48,13 @@ body{
 .tareas_main{
     display: flex;
     flex-direction: column;
+}
+
+.container{
     overflow-y: scroll;
     width:61%;
     height:52vh
+    
 }
 
 .tareas{

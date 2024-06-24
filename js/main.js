@@ -1,80 +1,68 @@
 import { tasksSection } from "./components/tasks.js";
-import { getAllTasks } from "./modules/data.js";
+import { getAllTasks, addTask, deleteTask, updateTask } from "./modules/data.js";
 
-let tareas = document.querySelector(".tareas_main");
+document.addEventListener('DOMContentLoaded', async() => {
+    let info = await getAllTasks();  
+    let loadTasks = async() => {
+        info = await getAllTasks();
+        let taskOnHold = info.filter(tasksSection=> tasksSection.status === 'On hold');   
+        let taskready = info.filter(tasksSection=> tasksSection.status === 'ready');
+    
+        tareas_main.innerHTML = await tasksSection(taskOnHold, 'On hold');
+        tareas2_main.innerHTML = await tasksSection(taskready, 'ready');
+       
+        document.querySelectorAll('.trash').forEach(button => {
+            button.addEventListener("click", async (e) => {
+                let id = e.target.dataset.id;
+                e.target.closest('.tareas, .tareas2').remove(); 
+                await deleteTask(id);
 
-addEventListener("DOMContentLoaded", async () => {
-    let data = await getAllTasks();
-    tareas.innerHTML = await tasksSection(data);
-})
+                info.forEach(async task => {
+                    if(task.id == id){
+                        info.pop(task);
+                    }
+                });
+            });
+        });
 
+        document.querySelectorAll('.check').forEach(button => {
+            button.addEventListener("click", async (e) => {
+                let id = e.target.dataset.id;
+                let task = info.find(task => task.id == id);
+                let nStatus = task.status === "ready" ? "On hold" : "On hold";
+                let update = {...task, status: nStatus}
+    
+                await updateTask(id, update);
+                await loadTasks();
+                });
+        });
+    };
 
-document.addEventListener('DOMContentLoaded', () => {
-    const tareas = document.querySelector('.tareas_main');
-    tareas.addEventListener('click', (e) => {
-        if (e.target.classList.contains('check')) {
-            const tarea = e.target.closest('.tareas');
-            if (tarea) {
-                const nuevaTarea = document.createElement('section');
-                nuevaTarea.className = 'tareas2';
-                nuevaTarea.innerHTML = `
-                    <p><del>${tarea.querySelector('p').textContent}</del></p>
-                    <img class="check" src="/storage/imgs/check.png">
-                    <img class="trash" src="/storage/imgs/trash.png">
-                `; 
-                tarea.replaceWith(nuevaTarea); 
-            }
-        } else if (e.target.classList.contains('trash')) {
-            const tarea = e.target.closest('.tareas2');
-            if (tarea) {
-                tarea.remove();
-            }
-        }
+    await loadTasks();
+
+    let createTask = document.querySelector('#addTaskButton');
+    createTask.addEventListener("click", async()=>{
+        let taskName = document.querySelector('#input__search');
+        let newTask = {
+            task: taskName.value,
+            status: 'ready'
+        };
+        await addTask(newTask);
+        taskName.value = '';
+        info.push(newTask);
+        await loadTasks();
+    });
+
+    let createTask2 = document.querySelector('#input__search');
+    createTask2.addEventListener("change", async()=>{
+        let taskName = document.querySelector('#input__search');
+        let newTask = {
+            task: taskName.value,
+            status: 'ready'
+        };
+        await addTask(newTask);
+        taskName.value = '';
+        info.push(newTask);
+        await loadTasks();
     });
 });
-
-export const deleteTask = async ({id}) => {
-    const url = `https://66778b0c145714a1bd74fd44.mockapi.io/Todolist/${id}`;
-    const options = {
-        method: "DELETE",
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    let res = await fetch(url, options);
-    if(res.status == 404) return {status: 204, message: `La tarea ${id} NO fue encontrada en la base de datos`}
-    let data = await res.json();
-    data.status = 202
-    data.message = `La tarea ${id} fue eliminada correctamente de la base de datos`
-    return data;
-}
-
-// console.log(await deleteTask({id: "52"}))
-
-
-export const updateTask = async (task) => {
-    const url = `https://66778b0c145714a1bd74fd44.mockapi.io/Todolist/${task.id}`;
-    const options = {
-        method: "PUT",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(task)
-    };
-    let res = await fetch(url, options);
-    console.log(res)
-    if (res.status === 404) {
-        return {
-            status: 404,
-            message: `La tarea ${task.id} no fue encontrada en la base de datos`
-        };
-    }
-    let data = await res.json();
-    data.status = 202;
-    data.message = `La tarea ${task.id} fue actualizada correctamente en la base de datos`;
-    return data;
-};
-
-console.log(await updateTask({id: "56", task: "hi"}))
-
-

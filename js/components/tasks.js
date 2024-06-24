@@ -7,8 +7,8 @@ export const tasksSection = (res) => {
         readyTasks += /*html*/`
           <section class="tareas">
             <p>${task.task}</p>
-            <img class="check" src="/storage/imgs/check.png">
-            <img class="trash" src="/storage/imgs/trash.png">
+            <img data-id="${task.id}" class="check" src="/storage/imgs/check.png">
+            <img data-id="${task.id}"  class="trash" src="/storage/imgs/trash.png">
           </section>
         `;
         
@@ -16,8 +16,8 @@ export const tasksSection = (res) => {
         onHoldTasks += /*html*/`
           <section class="tareas2">
             <p><del>${task.task}</del></p>
-            <img class="check" src="/storage/imgs/check.png">
-            <img class="trash" src="/storage/imgs/trash.png">
+            <img data-id="${task.id}"  class="check" src="/storage/imgs/check.png">
+            <img data-id="${task.id}"  class="trash" src="/storage/imgs/trash.png">
           </section>
         `;
       }

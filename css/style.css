@@ -3,7 +3,7 @@
 body{
     text-align: center;
     background: linear-gradient(135deg, rgb(201, 201, 201), rgb(15, 72, 105));
-    min-height: 97.2vh;
+    min-height: 88.7vh;
     font-family: "fuente";
 }
 
@@ -50,7 +50,7 @@ body{
     flex-direction: column;
     overflow-y: scroll;
     width:61%;
-    height:58vh
+    height:52vh
 }
 
 .tareas{
@@ -70,6 +70,7 @@ body{
     width:55px;
     border-radius: 30px;
     background-color: white;
+    cursor: pointer
 }
 
 .tareas p{
@@ -93,6 +94,7 @@ body{
     width:55px;
     border-radius: 30px;
     background-color: white;
+    cursor: pointer
 }
 
 .tareas2 p{
